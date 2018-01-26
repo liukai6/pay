@@ -1,0 +1,154 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>主页</title>
+    <style type="text/css" >
+        body{
+
+            text-align: center;
+            height: 100%;
+            width: auto;
+            background-color: #D0D0D0;
+
+        }
+        #user_info {
+            margin-top:10%;
+            font-size: 50px;
+          }
+        select{
+
+
+            margin:100px;
+            width: 30%;
+            height: 40px;
+            font-family: "微软雅黑";
+            font-size: 18px;
+            border: 1px #1a1a1a solid;
+            border-radius: 5px;
+        }
+
+        a {
+
+            background-color: #006400;
+            width: 50%;
+            margin-top:30px;
+            font-size: 50px;
+        }
+    </style>
+    <script>
+
+        function send_messge(obj,suc) {
+            if (window.ActiveXObject) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            } else if (window.XMLHttpRequest) {
+                xhr = new XMLHttpRequest();
+            }
+            if (xhr != null) {
+                xhr.open("POST", "http://192.168.2.88:8880/CardRoomManager/login/resLoginBys.vo");
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                xhr.send(obj);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        jsontxt = xhr.responseText;
+                        console.log(jsontxt);
+                        suc(JSON.parse(jsontxt));
+                    }
+                }
+            }
+
+        };
+
+        var telno = window.localStorage.getItem('telno');
+        var session = window.localStorage.getItem('sid');
+
+        function onclick(evt){
+            window.localStorage.setItem('branch_gameid',evt.target.gameid);
+            window.location.href="./detail.html"
+        }
+
+        function init_fun(){
+            if(telno && session)
+            {
+                var Sndobj="s=" + session;
+                send_messge(Sndobj,function(obj){
+                    if (obj.code ==0) {
+                        var changeuser = document.getElementById('changeuser');
+                        changeuser.onclick = function () {
+                            localStorage.clear();
+                            window.location.href = "./index.html";
+                        }
+
+                        var area = document.getElementById('area');
+                        var mj_type = document.getElementById('mj_type');
+                        console.log(obj);
+                        for(item in obj.glist){
+
+                            var area_option = document.createElement('option');
+                            area_option.innerHTML = obj.glist[item].name;
+                            area_option.setAttribute('value',obj.glist[item].gameid);
+                            area.appendChild(area_option);
+                        }
+
+
+                        //获取下拉状态
+                        area.onchange = function () {
+                            //获取选中状态
+                            var pay_rule = document.getElementById('pay_rule');
+                            var index = area.selectedIndex;
+                            var option = document.getElementsByTagName('option');
+                            option[index].setAttribute('selected',true);
+                            console.log(option[1]);
+                            //读取相应麻将的充值规则
+                            console.log(obj.glist[index-1].relist);
+                            for (var i=0; i < obj.glist[index-1].relist.length; i++) {
+                                var pay_a = document.createElement('a');
+                                pay_a.innerHTML = obj.glist[index-1].relist[i].pay/100 + "元得" + obj.glist[index-1].relist[i].card;
+                                pay_a.setAttribute('href','http://192.168.2.88:8880/CardRoomManager/alipay/pay.jsp?s=' + obj.sid + "&g=" + obj.glist[index-1].gameid + "&n=" + obj.glist[index-1].relist[i].id);
+                                pay_rule.appendChild(pay_a);
+                            }
+                        }
+                    } else {
+                        alert(obj.msg);
+                        localStorage.clear();
+                        window.location.href = "./index.html";
+                    }
+
+
+
+                });
+            }
+            else
+            {
+                window.location.href="./index.html"
+            }
+        }
+
+        //更改用户
+
+
+
+
+    </script>
+</head>
+<body onload="init_fun();">
+<div>
+    <div id="user_info">
+        <label>充值号码:</label><strong id="user_id"></strong>
+        <button  id="changeuser" style="font-size: 18px">更改用户</button>
+    </div>
+
+   <div>
+       <select id="area" name="gid">
+        <option>请选择麻将地区</option>
+        </select>
+   </div>
+    <div id="pay_rule">
+
+    </div>
+    <input id="but300"  type="button" value="300" />
+    <input id="but600"  type="button" value="600" />
+    <input id="but900"  type="button" value="900" />
+
+</div>
+</body>
+</html>

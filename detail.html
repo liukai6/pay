@@ -1,0 +1,155 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>详细</title>
+    <style type="text/css" >
+
+
+        .tab tr{background: #f1f1f1;}
+        .tab tr:nth-child(even){background: #ccc;}
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: #D0D0D0;
+
+        }
+        td {
+            margin-top:10px;
+            font-size: 70px;
+        }
+        input {
+            margin-top:30px;
+            font-size: 40px;
+        }
+    </style>
+    <script>
+        var telno = window.localStorage.getItem('branch_telephone');
+        var session = window.localStorage.getItem('branch_session');
+        var gameidstr = window.localStorage.getItem('branch_gameid');
+        var start=0;
+        var cur_page_len=0;
+
+        function send_messge(obj,suc) {
+            if (window.ActiveXObject) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            } else if (window.XMLHttpRequest) {
+                xhr = new XMLHttpRequest();
+            }
+            if (xhr != null) {
+                xhr.open("POST", "https://branch.h5qlyx.com");
+                xhr.send("action="+JSON.stringify(obj));
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        jsontxt = xhr.responseText;
+                        suc(JSON.parse(jsontxt));
+                    }
+                }
+            }
+
+        };
+
+        function get_detail(){
+            var Sndobj={
+                "telephone":telno,
+                "session":session,
+                "gameid":parseInt(gameidstr),
+                "start":start
+            };
+            send_messge(Sndobj,function(obj){
+                var tab=document.getElementById('tbid');
+                cur_page_len=obj.items.length;
+                for(item in obj.items){
+                    var tr = document.createElement("tr");
+
+                    var td0 = document.createElement("td");
+                    td0.innerHTML = ""+obj.items[item][0]
+                    tr.appendChild(td0);
+
+                    var td1 = document.createElement("td");
+                    td1.innerHTML = ""+obj.items[item][1]
+                    tr.appendChild(td1);
+
+                    var td2 = document.createElement("td");
+                    td2.innerHTML = ""+obj.items[item][2]
+                    tr.appendChild(td2);
+
+                    var td3 = document.createElement("td");
+                    td3.innerHTML = ""+obj.items[item][3]
+                    tr.appendChild(td3);
+
+                    tab.appendChild(tr);
+
+                }
+            });
+        }
+
+        function init_fun(){
+            if(telno && session)
+            {
+                if(gameidstr)
+                {
+                    get_detail();
+                }
+                else
+                {
+                    window.location.href="./main.html"
+                }
+            }
+            else
+            {
+                window.location.href="./index.html"
+            }
+        }
+
+        function fnDelete(){
+            var elem = document.getElementById("tbid");
+            var childs = elem.childNodes;
+            for(var i=childs.length-1; i>1; i--){
+                elem.removeChild(childs.item(i));
+            }
+        }
+
+        function prev(){
+            if(start>0){
+                start-=10;
+                if(start < 0){
+                    start=0;
+                }
+                fnDelete();
+                get_detail();
+            }
+            else{
+                alert("这已经是第一页了！");
+            }
+        }
+        function next(){
+            if(cur_page_len==10){
+                start+=10;
+                fnDelete();
+                get_detail();
+            }
+            else{
+                alert("这已经是最后一页了！");
+            }
+        }
+
+    </script>
+</head>
+<body onload="init_fun();">
+<div id='detailbox' align="center" style="height:90%;margin-top:10%" >
+    <table id="tbid" border='1' class="tab">
+        <tr>
+            <td>日期</td>
+            <td>耗卡</td>
+            <td>新增</td>
+            <td>活跃</td>
+        </tr>
+    </table>
+    </br>
+    <input type="button" value="上一页" id="prev" onclick="prev();" >
+    &nbsp;
+    &nbsp;
+    <input type="button" value="下一页" id="next" onclick="next();" >
+</div>
+</body>
+</html>
