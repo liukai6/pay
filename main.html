@@ -18,19 +18,30 @@
         select{
 
 
-            margin:100px;
-            width: 30%;
-            height: 40px;
+            margin: 50px;
+            width: 70%;
+            height: 35px;
             font-family: "微软雅黑";
-            font-size: 18px;
+            font-size: 25px;
             border: 1px #1a1a1a solid;
             border-radius: 5px;
         }
 
+       #main {
+            margin-left: 10%;
+            margin-right: 10%;
+            text-align: center;
+        }
+        h3 {
+            text-align: left;
+        }
         a {
-
+            color: #FFF;
+            border-radius: 7px;
+            border:1px solid #1a1a1a;
+            text-decoration:none;
             background-color: #006400;
-            width: 50%;
+            display: block;
             margin-top:30px;
             font-size: 50px;
         }
@@ -44,14 +55,16 @@
                 xhr = new XMLHttpRequest();
             }
             if (xhr != null) {
-                xhr.open("POST", "http://192.168.2.88:8880/CardRoomManager/login/resLoginBys.vo");
+                xhr.open("POST", "http://47.93.160.252:8080/login/resLoginBys.vo");
+                //xhr.open("POST", "/getdata.php");
                 xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                 xhr.send(obj);
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4 && xhr.status == 200) {
                         jsontxt = xhr.responseText;
-                        console.log(jsontxt);
                         suc(JSON.parse(jsontxt));
+                    } else if (xhr.status == 0) {
+                        alert('服务器连接超时,请联系客服人员');
                     }
                 }
             }
@@ -61,26 +74,17 @@
         var telno = window.localStorage.getItem('telno');
         var session = window.localStorage.getItem('sid');
 
-        function onclick(evt){
-            window.localStorage.setItem('branch_gameid',evt.target.gameid);
-            window.location.href="./detail.html"
-        }
 
         function init_fun(){
             if(telno && session)
             {
+                //将充值号码显示
+                var user_id = document.getElementById('user_id');
+                user_id.innerHTML = telno;
                 var Sndobj="s=" + session;
                 send_messge(Sndobj,function(obj){
-                    if (obj.code ==0) {
-                        var changeuser = document.getElementById('changeuser');
-                        changeuser.onclick = function () {
-                            localStorage.clear();
-                            window.location.href = "./index.html";
-                        }
-
+                    if (obj.code == 0) {
                         var area = document.getElementById('area');
-                        var mj_type = document.getElementById('mj_type');
-                        console.log(obj);
                         for(item in obj.glist){
 
                             var area_option = document.createElement('option');
@@ -93,18 +97,26 @@
                         //获取下拉状态
                         area.onchange = function () {
                             //获取选中状态
+                            var main = document.getElementById('main');
                             var pay_rule = document.getElementById('pay_rule');
+                            pay_rule.remove();
+                            var pay_rule = document.createElement('div');
+                            pay_rule.setAttribute('id','pay_rule');
+                            main.appendChild(pay_rule);
                             var index = area.selectedIndex;
                             var option = document.getElementsByTagName('option');
                             option[index].setAttribute('selected',true);
-                            console.log(option[1]);
                             //读取相应麻将的充值规则
-                            console.log(obj.glist[index-1].relist);
                             for (var i=0; i < obj.glist[index-1].relist.length; i++) {
+                                var pay_div = document.createElement('div');
+                                var pay_type = document.createElement('h3');
                                 var pay_a = document.createElement('a');
-                                pay_a.innerHTML = obj.glist[index-1].relist[i].pay/100 + "元得" + obj.glist[index-1].relist[i].card;
-                                pay_a.setAttribute('href','http://192.168.2.88:8880/CardRoomManager/alipay/pay.jsp?s=' + obj.sid + "&g=" + obj.glist[index-1].gameid + "&n=" + obj.glist[index-1].relist[i].id);
-                                pay_rule.appendChild(pay_a);
+                                pay_type.innerHTML = "¥" + obj.glist[index-1].relist[i].pay/100+ "元"
+                                pay_a.innerHTML = obj.glist[index-1].relist[i].pay/100 + "元得" + obj.glist[index-1].relist[i].card + "房卡";
+                                pay_a.setAttribute('href','http://47.93.160.252:8080/alipay/pay.jsp?s=' + obj.sid + "&g=" + obj.glist[index-1].gameid + "&n=" + obj.glist[index-1].relist[i].id);
+                                pay_div.appendChild(pay_type);
+                                pay_div.appendChild(pay_a);
+                                pay_rule.appendChild(pay_div);
                             }
                         }
                     } else {
@@ -131,10 +143,10 @@
     </script>
 </head>
 <body onload="init_fun();">
-<div>
+<div id ="main">
     <div id="user_info">
         <label>充值号码:</label><strong id="user_id"></strong>
-        <button  id="changeuser" style="font-size: 18px">更改用户</button>
+
     </div>
 
    <div>
@@ -145,9 +157,7 @@
     <div id="pay_rule">
 
     </div>
-    <input id="but300"  type="button" value="300" />
-    <input id="but600"  type="button" value="600" />
-    <input id="but900"  type="button" value="900" />
+
 
 </div>
 </body>

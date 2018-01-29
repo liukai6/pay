@@ -34,7 +34,7 @@
             xhr = new XMLHttpRequest();
         }
         if (xhr != null) {
-            xhr.open("POST", "http://192.168.2.88:8880/CardRoomManager/login/phoneLogin.vo");
+            xhr.open("POST", "http://47.93.160.252:8080/login/phoneLogin.vo");
             xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             xhr.send(obj);
             xhr.onreadystatechange = function () {
@@ -58,7 +58,7 @@
         }
         if (xhr != null) {
             console.log(JSON.stringify(obj));
-            xhr.open("POST", "http://192.168.2.88:8880/CardRoomManager/admin/getVerCode.vo");
+            xhr.open("POST", "http://47.93.160.252:8080/admin/getVerCode.vo");
             xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             xhr.send(obj);
             xhr.onreadystatechange = function () {
