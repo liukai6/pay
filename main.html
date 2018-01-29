@@ -8,7 +8,7 @@
             text-align: center;
             height: 100%;
             width: auto;
-            background-color: #D0D0D0;
+            background-color: #FFF;
 
         }
         #user_info {
@@ -19,10 +19,10 @@
 
 
             margin: 50px;
-            width: 70%;
-            height: 35px;
+            width: 80%;
+            height: 70px;
             font-family: "微软雅黑";
-            font-size: 25px;
+            font-size: 40px;
             border: 1px #1a1a1a solid;
             border-radius: 5px;
         }
@@ -32,7 +32,7 @@
             margin-right: 10%;
             text-align: center;
         }
-        h3 {
+        h1 {
             text-align: left;
         }
         a {
@@ -40,7 +40,7 @@
             border-radius: 7px;
             border:1px solid #1a1a1a;
             text-decoration:none;
-            background-color: #006400;
+            background-color: #63b8ff;
             display: block;
             margin-top:30px;
             font-size: 50px;
@@ -109,10 +109,10 @@
                             //读取相应麻将的充值规则
                             for (var i=0; i < obj.glist[index-1].relist.length; i++) {
                                 var pay_div = document.createElement('div');
-                                var pay_type = document.createElement('h3');
+                                var pay_type = document.createElement('h1');
                                 var pay_a = document.createElement('a');
                                 pay_type.innerHTML = "¥" + obj.glist[index-1].relist[i].pay/100+ "元"
-                                pay_a.innerHTML = obj.glist[index-1].relist[i].pay/100 + "元得" + obj.glist[index-1].relist[i].card + "房卡";
+                                pay_a.innerHTML = obj.glist[index-1].relist[i].pay/100 + "元=" + obj.glist[index-1].relist[i].card + "房卡";
                                 pay_a.setAttribute('href','http://47.93.160.252:8080/alipay/pay.jsp?s=' + obj.sid + "&g=" + obj.glist[index-1].gameid + "&n=" + obj.glist[index-1].relist[i].id);
                                 pay_div.appendChild(pay_type);
                                 pay_div.appendChild(pay_a);
@@ -148,7 +148,6 @@
         <label>充值号码:</label><strong id="user_id"></strong>
 
     </div>
-
    <div>
        <select id="area" name="gid">
         <option>请选择麻将地区</option>
